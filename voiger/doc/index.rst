@@ -17,5 +17,12 @@ Usage
 #. Allow the microphone when Chrome asks.
 #. Enter a number and press call.
 
+You can also click any phone number in Odoo; Voiger opens and calls it. Numbers need a
+country code, for example +66.
+
 The call keeps running while you move between Odoo apps, and while the panel is hidden.
+
+When a call ends, it is logged as a note on the record you called from. For calls dialled in
+Voiger, it is logged on every contact with that number.
+
 Click the phone button again to show or hide the panel.
