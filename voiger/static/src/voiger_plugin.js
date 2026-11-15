@@ -150,7 +150,11 @@ export class VoigerPlugin extends Plugin {
                         this.dialog.add(FormViewDialog, {
                             resModel: "res.partner",
                             title: _t("New contact"),
-                            context: { default_phone: call.phone },
+                            context: {
+                                default_phone: call.phone,
+                                ...(call.name ? { default_name: call.name } : {}),
+                                ...(call.email ? { default_email: call.email } : {}),
+                            },
                             onRecordSaved: (record) =>
                                 this.serialize(call.key, () => this.contactCreated(call.key, record.resId)),
                         });
