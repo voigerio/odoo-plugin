@@ -38,8 +38,9 @@ export function callBody(call) {
     return [
         `<p>${escape(describeCall(call))}</p>`,
         call.details?.html ?? "",
+        // Odoo keeps <audio> but strips its controls; voiger_message.js shows the player.
         recording?.startsWith("https://")
-            ? `<p><a href="${escape(recording)}" target="_blank" rel="noopener">${escape(_t("Play the recording"))}</a></p>`
+            ? `<audio src="${escape(recording)}"></audio><p><a href="${escape(recording)}" target="_blank" rel="noopener">${escape(_t("Play the recording"))}</a></p>`
             : "",
     ].join("");
 }
