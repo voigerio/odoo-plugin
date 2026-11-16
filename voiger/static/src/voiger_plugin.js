@@ -106,12 +106,14 @@ export class VoigerPlugin extends Plugin {
         }
     }
 
+    /** Up to two contacts with this number: enough to tell one from several. */
+    async contactsWith(phone) {
+        return phone ? this.orm.search("res.partner", [["phone_mobile_search", "=", phone]], { limit: 2 }) : [];
+    }
+
     /** The one contact with this number; none when no contact or several share it. */
     async findContact(phone) {
-        if (!phone) {
-            return null;
-        }
-        const ids = await this.orm.search("res.partner", [["phone_mobile_search", "=", phone]], { limit: 2 });
+        const ids = await this.contactsWith(phone);
         return ids.length === 1 ? ids[0] : null;
     }
 
@@ -122,8 +124,14 @@ export class VoigerPlugin extends Plugin {
         if (call.record) {
             return;
         }
-        const contactId = await this.findContact(call.phone);
-        if (contactId && call.direction === "inbound") {
+        const ids = await this.contactsWith(call.phone);
+        const contactId = ids.length === 1 ? ids[0] : null;
+        if (ids.length > 1) {
+            this.notification.add(
+                _t("%(phone)s belongs to more than one Odoo contact, so this call isn't logged on any of them.", { phone: call.phone }),
+                { type: "warning" }
+            );
+        } else if (contactId && call.direction === "inbound") {
             await this.action.doAction({
                 type: "ir.actions.act_window",
                 res_model: "res.partner",
