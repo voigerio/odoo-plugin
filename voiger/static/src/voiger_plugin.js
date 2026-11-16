@@ -129,7 +129,7 @@ export class VoigerPlugin extends Plugin {
         if (ids.length > 1) {
             this.notification.add(
                 _t("%(phone)s belongs to more than one Odoo contact, so this call isn't logged on any of them.", { phone: call.phone }),
-                { type: "warning" }
+                { type: "warning", sticky: true }
             );
         } else if (contactId && call.direction === "inbound") {
             await this.action.doAction({
