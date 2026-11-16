@@ -2,7 +2,7 @@
     "name": "Voiger",
     "summary": "Make and take Voiger calls without leaving Odoo",
     "description": "Opens the Voiger dialer in a panel on every Odoo screen. Requires a Voiger account.",
-    "version": "20.0.1.3.0",
+    "version": "20.0.1.3.1",
     "category": "Productivity/VoIP",
     "author": "Voiger",
     "maintainer": "Voiger",
