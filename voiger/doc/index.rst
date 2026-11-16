@@ -32,7 +32,8 @@ contact yet, click **Create contact** and the call is logged on the new contact.
 
 The note shows the result, talk and hold time, who hung up, the queue, the agent and the
 Voiger call ID. Your Voiger notes, the AI summary and a link to the recording are added when
-Voiger has them, even several minutes after the call. Voiger tags are added to the contact as
+Voiger has them, even several minutes after the call. The recording link works for one day
+after the call. Voiger tags are added to the contact as
 tags. A tag Odoo doesn't have yet is created only for users allowed to create contact tags,
 such as sales users.
 
