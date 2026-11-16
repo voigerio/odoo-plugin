@@ -22,7 +22,21 @@ country code, for example +66.
 
 The call keeps running while you move between Odoo apps, and while the panel is hidden.
 
-When a call ends, it is logged as a note on the record you called from. For calls dialled in
-Voiger, it is logged on every contact with that number.
+An incoming call opens the panel by itself. If the caller's number belongs to one Odoo
+contact, Odoo opens that contact.
 
-Click the phone button again to show or hide the panel.
+When a call ends, it is logged as a note on the record you called from, and on the lead's
+contact for a lead or opportunity. Other calls are logged on the one contact with that number;
+a number shared by several contacts is not logged on any of them. For a number that is no
+contact yet, click **Create contact** and the call is logged on the new contact.
+
+The note shows the result, talk and hold time, who hung up, the queue, the agent and the
+Voiger call ID. Your Voiger notes, the AI summary and a link to the recording are added when
+Voiger has them, even several minutes after the call. Voiger tags are added to the contact as
+tags. A tag Odoo doesn't have yet is created only for users allowed to create contact tags,
+such as sales users.
+
+Use **Compact** in the panel header to switch between the compact dialer and the full Voiger
+app. The choice is kept in this browser. Click the phone button again to show or hide the panel.
+
+The app sends Voiger the numbers you call. Call details come from Voiger to Odoo.
