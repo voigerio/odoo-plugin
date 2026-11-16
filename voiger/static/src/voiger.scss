@@ -7,8 +7,9 @@
     z-index: 1050;
     display: flex;
     flex-direction: column;
-    width: 380px;
-    height: 680px;
+    // Voiger's compact dialer centres its keypad: any spare height shows as gaps around it.
+    width: 340px;
+    height: 568px;
     max-width: calc(100vw - 16px);
     max-height: calc(100vh - 62px);
     border-radius: 8px;
@@ -31,11 +32,6 @@
 
     &.d-none {
         display: none !important;
-    }
-
-    &.o_voiger_panel_full {
-        width: 960px;
-        height: 760px;
     }
 
     .o_voiger_panel_header {

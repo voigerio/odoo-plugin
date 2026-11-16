@@ -36,7 +36,8 @@ Voiger has them, even several minutes after the call. Voiger tags are added to t
 tags. A tag Odoo doesn't have yet is created only for users allowed to create contact tags,
 such as sales users.
 
-Use **Compact** in the panel header to switch between the compact dialer and the full Voiger
-app. The choice is kept in this browser. Click the phone button again to show or hide the panel.
+The panel opens under the phone button and closes when you click elsewhere in Odoo. A call
+goes on while the panel is closed. Use the pin in the panel header to keep it open; the choice
+is kept in this browser.
 
 The app sends Voiger the numbers you call. Call details come from Voiger to Odoo.
