@@ -2,7 +2,7 @@ import { _t } from "@web/core/l10n/translation";
 
 export const PANEL_URL = "https://integrations.voiger.io/odoo/panel/";
 const PANEL_ORIGIN = new URL(PANEL_URL).origin;
-const DIALER_MODE_KEY = "voiger.odoo.dialerMode";
+const PINNED_KEY = "voiger.odoo.pinned";
 
 // Plain DOM outside Owl, so the frame and its call survive every Odoo screen change.
 const panel = document.createElement("div");
@@ -10,31 +10,28 @@ panel.className = "o_voiger_panel d-none";
 let frame = null;
 let ready = false;
 let queuedDial = null;
-const liveCalls = new Set();
 const handlers = {
     onDialOutcome: () => {},
     onStarted: () => {},
     onCall: () => {},
-    onModeBlocked: () => {},
 };
 
-export function readDialerMode() {
+function readPinned() {
     try {
-        return localStorage.getItem(DIALER_MODE_KEY) !== "false";
+        return localStorage.getItem(PINNED_KEY) === "true";
     } catch {
-        return true;
+        return false;
     }
 }
+let pinned = readPinned();
 
 function send(message) {
     frame.contentWindow.postMessage({ voiger: "odoo", v: 1, ...message }, PANEL_ORIGIN);
 }
 
 function loadFrame() {
-    const compact = readDialerMode();
-    panel.classList.toggle("o_voiger_panel_full", !compact);
     const url = new URL(PANEL_URL);
-    url.searchParams.set("dialerMode", String(compact));
+    url.searchParams.set("dialerMode", "true");
     ready = false;
     frame.src = url.href;
 }
@@ -45,38 +42,32 @@ function header() {
     const title = document.createElement("span");
     title.className = "fw-bold flex-grow-1";
     title.textContent = "Voiger";
-    const mode = document.createElement("div");
-    mode.className = "form-check form-switch mb-0";
-    const toggle = document.createElement("input");
-    toggle.type = "checkbox";
-    toggle.className = "form-check-input";
-    toggle.id = "o_voiger_compact";
-    toggle.checked = readDialerMode();
-    const label = document.createElement("label");
-    label.className = "form-check-label";
-    label.htmlFor = toggle.id;
-    label.textContent = _t("Compact");
-    mode.append(toggle, label);
-    toggle.addEventListener("change", () => {
-        // Reloading the dialer would drop the call.
-        if (liveCalls.size) {
-            toggle.checked = readDialerMode();
-            handlers.onModeBlocked();
-            return;
-        }
+    const pin = document.createElement("button");
+    pin.type = "button";
+    pin.className = "btn btn-link p-0 o_voiger_pin";
+    pin.title = _t("Keep open");
+    pin.innerHTML = '<i class="oi" data-icon="push_pin" role="img"></i>';
+    const showPinned = () => {
+        pin.classList.toggle("text-primary", pinned);
+        pin.classList.toggle("text-muted", !pinned);
+        pin.setAttribute("aria-pressed", String(pinned));
+    };
+    showPinned();
+    pin.addEventListener("click", () => {
+        pinned = !pinned;
         try {
-            localStorage.setItem(DIALER_MODE_KEY, String(toggle.checked));
+            localStorage.setItem(PINNED_KEY, String(pinned));
         } catch {
             // Applies to this page only.
         }
-        loadFrame();
+        showPinned();
     });
     const close = document.createElement("button");
     close.type = "button";
     close.className = "btn-close";
     close.title = _t("Hide");
     close.addEventListener("click", hide);
-    bar.append(title, mode, close);
+    bar.append(title, pin, close);
     return bar;
 }
 
@@ -117,10 +108,8 @@ window.addEventListener("message", (event) => {
     } else if (message.type === "dial") {
         handlers.onDialOutcome(message.outcome);
     } else if (message.type === "started" && message.call) {
-        liveCalls.add(message.call.key);
         handlers.onStarted(message.call);
     } else if (message.type === "call" && message.call) {
-        liveCalls.delete(message.call.key);
         handlers.onCall(message.call);
     }
 });
@@ -151,10 +140,10 @@ function show() {
 }
 
 window.addEventListener("resize", () => panel.classList.contains("d-none") || place());
-document.addEventListener("keydown", (event) => event.key === "Escape" && !liveCalls.size && hide());
-// Like Odoo's own top-bar menus, a click elsewhere closes it, unless a call is on.
+document.addEventListener("keydown", (event) => event.key === "Escape" && !pinned && hide());
+// Like Odoo's own top-bar menus, a click elsewhere closes it unless pinned; a call goes on hidden.
 document.addEventListener("pointerdown", (event) => {
-    if (liveCalls.size || panel.contains(event.target) || event.target.closest?.(".o_voiger_systray, .o_phone_form_link, a[href^='tel:'], .o_notification")) {
+    if (pinned || panel.contains(event.target) || event.target.closest?.(".o_voiger_systray, .o_phone_form_link, a[href^='tel:'], .o_notification")) {
         return;
     }
     hide();

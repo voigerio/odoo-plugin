@@ -85,8 +85,6 @@ export class VoigerPlugin extends Plugin {
             onDialOutcome: (outcome) => this.onDialOutcome(outcome),
             onStarted: (call) => this.onStarted(call).catch((error) => console.warn("Voiger call start not handled", error)),
             onCall: (call) => this.serialize(call.key, () => this.logCall(call)),
-            onModeBlocked: () =>
-                this.notification.add(_t("Change the dialer size after the call."), { type: "info" }),
         });
         mount();
     }
