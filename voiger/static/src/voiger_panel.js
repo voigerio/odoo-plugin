@@ -75,7 +75,7 @@ function header() {
     close.type = "button";
     close.className = "btn-close";
     close.title = _t("Hide");
-    close.addEventListener("click", () => panel.classList.add("d-none"));
+    close.addEventListener("click", hide);
     bar.append(title, mode, close);
     return bar;
 }
@@ -125,21 +125,56 @@ window.addEventListener("message", (event) => {
     }
 });
 
+/** Drops the panel down under the Voiger button in the top bar, with its arrow on the button. */
+function place() {
+    const button = document.querySelector(".o_voiger_systray");
+    const rect = button?.getBoundingClientRect();
+    if (!rect?.width) {
+        panel.style.removeProperty("top");
+        panel.style.removeProperty("right");
+        return;
+    }
+    const right = Math.max(8, window.innerWidth - rect.right - 8);
+    panel.style.top = `${rect.bottom + 8}px`;
+    panel.style.right = `${right}px`;
+    panel.style.setProperty("--o-voiger-arrow-right", `${window.innerWidth - right - rect.left - rect.width / 2 - 7}px`);
+}
+
+function hide() {
+    panel.classList.add("d-none");
+}
+
+function show() {
+    mount();
+    place();
+    panel.classList.remove("d-none");
+}
+
+window.addEventListener("resize", () => panel.classList.contains("d-none") || place());
+document.addEventListener("keydown", (event) => event.key === "Escape" && !liveCalls.size && hide());
+// Like Odoo's own top-bar menus, a click elsewhere closes it, unless a call is on.
+document.addEventListener("pointerdown", (event) => {
+    if (liveCalls.size || panel.contains(event.target) || event.target.closest?.(".o_voiger_systray, .o_phone_form_link, a[href^='tel:'], .o_notification")) {
+        return;
+    }
+    hide();
+});
+
 export const voigerPanel = {
     setHandlers(next) {
         Object.assign(handlers, next);
     },
     toggle() {
-        mount();
-        panel.classList.toggle("d-none");
+        if (panel.classList.contains("d-none")) {
+            show();
+        } else {
+            hide();
+        }
     },
-    show() {
-        mount();
-        panel.classList.remove("d-none");
-    },
+    show,
     /** Returns false when the call waits for the agent to sign in to Voiger. */
     dial(phone, record) {
-        this.show();
+        show();
         const message = { type: "dial", id: crypto.randomUUID(), phone, record };
         if (!ready) {
             queuedDial = message;
