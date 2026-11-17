@@ -27,9 +27,12 @@ export function describeCall(call) {
             ? _t("Incoming Voiger call from %(phone)s, %(duration)s", { phone, duration: duration(call.durationMs) })
             : _t("Missed Voiger call from %(phone)s", { phone });
     }
-    return call.answered
-        ? _t("Outbound Voiger call to %(phone)s, %(duration)s", { phone, duration: duration(call.durationMs) })
-        : _t("Outbound Voiger call to %(phone)s, not answered", { phone });
+    if (call.answered) {
+        return _t("Outbound Voiger call to %(phone)s, %(duration)s", { phone, duration: duration(call.durationMs) });
+    }
+    if (call.details?.result === "busy") return _t("Outbound Voiger call to %(phone)s, busy", { phone });
+    if (call.details?.result === "failed") return _t("Outbound Voiger call to %(phone)s, failed", { phone });
+    return _t("Outbound Voiger call to %(phone)s, not answered", { phone });
 }
 
 /** The chatter note: what happened, then Voiger's notes, summary and call details. */
