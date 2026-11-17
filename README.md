@@ -5,7 +5,7 @@ every Odoo screen, and get each call logged as a note on the Odoo contact, lead 
 
 The app is free. Calling needs a Voiger account: [voiger.io](https://voiger.io).
 
-Each Odoo version has its own branch. This branch, `20.0`, is for Odoo 20.
+Each Odoo version installs from its own branch: `20.0` for Odoo 20. Work goes to `main` first.
 
 ## Install
 
